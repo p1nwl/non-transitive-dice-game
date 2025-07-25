@@ -15,6 +15,20 @@ export class FairRandomProtocol {
     this.range = range;
   }
 
+  getComputerNumber(): number {
+    if (this.computerNumber === null) {
+      throw new Error("Computer number is not set. Protocol not initiated.");
+    }
+    return this.computerNumber;
+  }
+
+  getKey(): Buffer {
+    if (this.key === null) {
+      throw new Error("Key is not set. Protocol not initiated.");
+    }
+    return this.key;
+  }
+
   async initiate(): Promise<void> {
     this.computerNumber = RandomGenerator.generateSecureInt(this.range);
     this.key = RandomGenerator.generateKey();
@@ -37,10 +51,11 @@ export class FairRandomProtocol {
       while (true) {
         let prompt = "Add your number";
         if (this.range === 2) {
-          prompt = "Try to guess my selection\n";
+          prompt = "Try to guess my selection";
         } else {
-          prompt += ` modulo ${this.range}.\n`;
+          prompt += ` modulo ${this.range}.`;
         }
+        prompt += "\n";
 
         for (let i = 0; i < this.range; i++) {
           prompt += `${i} - ${i}\n`;
@@ -78,26 +93,35 @@ export class FairRandomProtocol {
     }
   }
 
-  finalize(userNumber: number): number {
+  finalize(userNumber: number, showDetails: boolean = true): number {
     if (this.computerNumber === null || this.key === null) {
       throw new Error("Protocol not initiated.");
     }
 
     const result = (this.computerNumber + userNumber) % this.range;
-    const resultTable = new Table({
-      style: { head: ["cyan"] },
-    });
 
-    resultTable.push(
-      { "Computer Number": this.computerNumber },
-      { "User Number": userNumber },
-      { Modulo: this.range },
-      { "Result (Index)": result },
-      { "Secret Key": this.key.toString("hex").toUpperCase() }
-    );
+    if (showDetails) {
+      const resultTable = new Table({
+        style: { head: ["cyan"] },
+      });
 
-    console.log("Fair Roll Result:");
-    console.log(resultTable.toString());
+      resultTable.push(
+        { "Computer Number": this.computerNumber },
+        { "User Number": userNumber },
+        { Modulo: this.range },
+        { "Result (Index)": result },
+        { "Secret Key": this.key.toString("hex").toUpperCase() }
+      );
+
+      console.log("Fair Roll Result:");
+      console.log(resultTable.toString());
+    } else {
+      console.log(
+        `My selection: ${this.computerNumber} (KEY=${this.key
+          .toString("hex")
+          .toUpperCase()}).`
+      );
+    }
 
     return result;
   }

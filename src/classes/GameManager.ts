@@ -50,6 +50,7 @@ export class GameManager {
           rl.close();
           process.exit(0);
         }
+
         if (trimmed === "?") {
           const table = new ProbabilityTable(this.dice);
           table.display();
@@ -93,8 +94,10 @@ export class GameManager {
     console.log("Let's determine who makes the first move.");
     const firstMoveProtocol = new FairRandomProtocol(2);
     await firstMoveProtocol.initiate();
+
     const userChoice = await firstMoveProtocol.getUserInput();
-    const computerChoice = firstMoveProtocol.finalize(userChoice);
+    const computerChoice = firstMoveProtocol.getComputerNumber();
+    firstMoveProtocol.finalize(userChoice, false);
 
     const userGoesFirst = (computerChoice + userChoice) % 2 === 0;
 
@@ -104,6 +107,9 @@ export class GameManager {
       const availableForComputer = this.dice
         .map((_, i) => i)
         .filter((i) => i !== this.userDieIndex);
+      if (availableForComputer.length === 0) {
+        throw new Error("No dice available for computer to choose.");
+      }
       this.computerDieIndex =
         availableForComputer[
           Math.floor(Math.random() * availableForComputer.length)
