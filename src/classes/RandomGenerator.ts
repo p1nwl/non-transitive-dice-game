@@ -6,21 +6,7 @@ export class RandomGenerator {
   }
 
   static generateSecureInt(range: number): number {
-    if (range <= 0 || range > 256) {
-      throw new Error("range must be between 1 and 256.");
-    }
-
-    const maxValue = 256;
-    const limit = Math.floor(maxValue / range) * range;
-
-    let randomByte: number;
-
-    do {
-      const buf = crypto.randomBytes(1);
-      randomByte = buf[0];
-    } while (randomByte >= limit);
-
-    return randomByte % range;
+    return crypto.randomInt(range);
   }
 
   static generateHMAC(key: Buffer, message: number): string {
