@@ -1,6 +1,7 @@
 import * as readline from "readline/promises";
 import { RandomGenerator } from "./RandomGenerator";
 import Table from "cli-table3";
+import crypto from "crypto";
 
 export class FairRandomProtocol {
   private key: Buffer | null = null;
@@ -30,7 +31,7 @@ export class FairRandomProtocol {
   }
 
   async initiate(): Promise<void> {
-    this.computerNumber = RandomGenerator.generateSecureInt(this.range);
+    this.computerNumber = crypto.randomInt(this.range);
     this.key = RandomGenerator.generateKey();
     this.hmac = RandomGenerator.generateHMAC(this.key, this.computerNumber);
 

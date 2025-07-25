@@ -5,10 +5,6 @@ export class RandomGenerator {
     return crypto.randomBytes(32);
   }
 
-  static generateSecureInt(range: number): number {
-    return crypto.randomInt(range);
-  }
-
   static generateHMAC(key: Buffer, message: number): string {
     const msgBuffer = Buffer.alloc(4);
     msgBuffer.writeUInt32BE(message, 0);
